@@ -37,9 +37,9 @@ def render_setup_screen() -> None:
         st.subheader("Quiz Ready")
         st.write(
             f"{len(st.session_state.questions)} question(s) prepared for "
-            f"`{st.session_state.topic or 'general knowledge'}` at "
-            f"`{difficulty_details['label']}` difficulty using "
-            f"`{st.session_state.gemini_model}`."
+            f"{st.session_state.topic or 'general knowledge'} at "
+            f"{difficulty_details['label']} difficulty using "
+            f"{st.session_state.gemini_model}."
         )
         start_col, regen_col = st.columns(2)
         with start_col:
@@ -60,10 +60,10 @@ def render_setup_screen() -> None:
 
     st.subheader("No Questions Yet")
     st.write(
-        f"Current topic: `{st.session_state.topic or 'general knowledge'}`. "
-        f"Difficulty: `{difficulty_details['label']}`. "
-        f"Using model: `{st.session_state.gemini_model}`. "
-        f"Questions to be generated: `{int(st.session_state.questions_to_generate)}`."
+        f"Current topic: {st.session_state.topic or 'general knowledge'}. "
+        f"Difficulty: {difficulty_details['label']}. "
+        f"Using model: {st.session_state.gemini_model}. "
+        f"Questions to be generated: {int(st.session_state.questions_to_generate)}."
     )
     if st.button("Generate from Scratch", type="primary", disabled=not key_is_configured):
         queue_generation(

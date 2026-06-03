@@ -4,37 +4,139 @@ import streamlit.components.v1 as components  # type: ignore
 
 APP_STYLES = """
 <style>
+/* ─── Font (Inter as open-source Geist stand-in; Geist Mono → JetBrains Mono) ─── */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap');
+
+/* ─── Design tokens (Vercel / DESIGN.md) ─── */
 :root {
-    --option-height: 132px;
-    --option-font-size: 18px;
+    --ink:             #171717;
+    --body-color:      #4d4d4d;
+    --mute:            #888888;
+    --hairline:        #ebebeb;
+    --hairline-strong: #a1a1a1;
+    --canvas:          #ffffff;
+    --canvas-soft:     #fafafa;
+    --canvas-soft-2:   #f5f5f5;
+    --link:            #0070f3;
+    --error:           #ee0000;
+
+    --option-height:    132px;
+    --option-font-size: 16px;
     --option-padding-y: 12px;
-    --option-padding-x: 14px;
-    --option-row-gap: 14px;
-    --option-neutral-bg: #565656;
+    --option-padding-x: 16px;
+    --option-row-gap:   12px;
 }
 
+/* ─── Global: font & page background ─── */
+html, body, .stApp,
+[data-testid="stAppViewContainer"],
+[data-testid="stMain"],
+section.main {
+    font-family: Inter, system-ui, -apple-system, sans-serif !important;
+    background-color: var(--canvas-soft) !important;
+    color: var(--ink) !important;
+}
+
+/* ─── Headings ─── */
+h1, h2, h3,
+[data-testid="stMarkdownContainer"] h1,
+[data-testid="stMarkdownContainer"] h2,
+[data-testid="stMarkdownContainer"] h3 {
+    font-family: Inter, system-ui, sans-serif !important;
+    font-weight: 600 !important;
+    color: var(--ink) !important;
+}
+
+h1, [data-testid="stMarkdownContainer"] h1 {
+    font-size: 32px !important;
+    line-height: 40px !important;
+    letter-spacing: -1.28px !important;
+}
+
+h2, [data-testid="stMarkdownContainer"] h2 {
+    font-size: 24px !important;
+    line-height: 32px !important;
+    letter-spacing: -0.96px !important;
+}
+
+h3, [data-testid="stMarkdownContainer"] h3 {
+    font-size: 20px !important;
+    line-height: 28px !important;
+    letter-spacing: -0.6px !important;
+}
+
+/* ─── Main content area top padding ─── */
+[data-testid="stMainBlockContainer"] {
+    padding-top: 48px !important;
+    padding-bottom: 64px !important;
+}
+
+/* ─── Question box ─── */
 .question-box {
-    background-color: #000000;
-    padding: 40px;
-    border-radius: 8px;
+    background: var(--canvas);
+    color: var(--ink);
+    border: 1px solid var(--hairline);
+    box-shadow: 0px 1px 1px #00000005, 0px 2px 2px #0000000a;
+    border-radius: 12px;
+    padding: 40px 32px;
     text-align: center;
-    font-size: 32px;
-    font-weight: bold;
-    margin-bottom: 30px;
-    box-shadow: 0px 4px 6px rgba(0,0,0,0.1);
-    color: white;
+    font-size: 24px;
+    font-weight: 600;
+    line-height: 32px;
+    letter-spacing: -0.96px;
+    margin-bottom: 24px;
+    font-family: Inter, system-ui, sans-serif;
 }
 
-.stButton>button {
+/* ─── Global button base ─── */
+.stButton > button {
     width: 100%;
-    border-radius: 8px;
-    border: none;
-    padding: 10px 15px;
-    font-size: 16px;
-    transition: background-color 0.15s ease;
+    border-radius: 100px;
+    font-family: Inter, system-ui, sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 20px;
+    padding: 10px 16px;
+    transition: background-color 0.12s ease, border-color 0.12s ease;
+    cursor: pointer;
 }
 
-/* Fix: stElementContainer and all descendants need explicit 100% width to override Streamlit's fit-content */
+/* Primary pill — ink fill */
+.stButton > button[kind="primary"] {
+    background-color: var(--ink) !important;
+    color: #ffffff !important;
+    border: none !important;
+}
+
+.stButton > button[kind="primary"]:hover:not(:disabled) {
+    background-color: #333333 !important;
+}
+
+.stButton > button[kind="primary"]:disabled {
+    background-color: var(--canvas-soft-2) !important;
+    color: var(--mute) !important;
+    border: 1px solid var(--hairline) !important;
+}
+
+/* Secondary / default — white with hairline */
+.stButton > button:not([kind="primary"]) {
+    background-color: var(--canvas) !important;
+    color: var(--ink) !important;
+    border: 1px solid var(--hairline) !important;
+}
+
+.stButton > button:not([kind="primary"]):hover:not(:disabled) {
+    background-color: var(--canvas-soft-2) !important;
+    border-color: var(--hairline-strong) !important;
+}
+
+.stButton > button:not([kind="primary"]):disabled {
+    background-color: var(--canvas-soft) !important;
+    color: var(--mute) !important;
+    border: 1px solid var(--hairline) !important;
+}
+
+/* ─── Answer option buttons — force 100% width ─── */
 .st-key-answer_0,
 .st-key-answer_1,
 .st-key-answer_2,
@@ -74,88 +176,62 @@ APP_STYLES = """
     margin-bottom: var(--option-row-gap);
 }
 
-.st-key-answer_0 .stButton>button,
-.st-key-answer_1 .stButton>button,
-.st-key-answer_2 .stButton>button,
-.st-key-answer_3 .stButton>button,
-.st-key-empty_answer_0 .stButton>button,
-.st-key-empty_answer_1 .stButton>button,
-.st-key-empty_answer_2 .stButton>button,
-.st-key-empty_answer_3 .stButton>button {
-    height: var(--option-height);
-    padding: var(--option-padding-y) var(--option-padding-x);
-    font-size: var(--option-font-size);
-    font-weight: bold;
-    color: white;
+/* Answer option button style — canvas card with hairline border */
+.st-key-answer_0 .stButton > button,
+.st-key-answer_1 .stButton > button,
+.st-key-answer_2 .stButton > button,
+.st-key-answer_3 .stButton > button,
+.st-key-empty_answer_0 .stButton > button,
+.st-key-empty_answer_1 .stButton > button,
+.st-key-empty_answer_2 .stButton > button,
+.st-key-empty_answer_3 .stButton > button {
+    height: var(--option-height) !important;
+    padding: var(--option-padding-y) var(--option-padding-x) !important;
+    font-size: var(--option-font-size) !important;
+    font-weight: 500 !important;
+    color: var(--ink) !important;
+    background-color: var(--canvas) !important;
+    border: 1px solid var(--hairline) !important;
+    border-radius: 8px !important;
     white-space: normal;
     word-wrap: break-word;
-    line-height: 1.2;
+    line-height: 1.4;
     display: block;
     text-align: center;
-    box-shadow: none;
-    overflow: hidden;
+    box-shadow: 0px 1px 1px #00000005;
 }
 
-.st-key-answer_0 .stButton>button p,
-.st-key-answer_0 .stButton>button span,
-.st-key-answer_1 .stButton>button p,
-.st-key-answer_1 .stButton>button span,
-.st-key-answer_2 .stButton>button p,
-.st-key-answer_2 .stButton>button span,
-.st-key-answer_3 .stButton>button p,
-.st-key-answer_3 .stButton>button span,
-.st-key-empty_answer_0 .stButton>button p,
-.st-key-empty_answer_0 .stButton>button span,
-.st-key-empty_answer_1 .stButton>button p,
-.st-key-empty_answer_1 .stButton>button span,
-.st-key-empty_answer_2 .stButton>button p,
-.st-key-empty_answer_2 .stButton>button span,
-.st-key-empty_answer_3 .stButton>button p,
-.st-key-empty_answer_3 .stButton>button span {
+.st-key-answer_0 .stButton > button:hover,
+.st-key-answer_1 .stButton > button:hover,
+.st-key-answer_2 .stButton > button:hover,
+.st-key-answer_3 .stButton > button:hover {
+    background-color: var(--canvas-soft-2) !important;
+    border-color: var(--hairline-strong) !important;
+}
+
+/* font-size passthrough for nested elements inside answer buttons */
+.st-key-answer_0 .stButton > button p,
+.st-key-answer_0 .stButton > button span,
+.st-key-answer_1 .stButton > button p,
+.st-key-answer_1 .stButton > button span,
+.st-key-answer_2 .stButton > button p,
+.st-key-answer_2 .stButton > button span,
+.st-key-answer_3 .stButton > button p,
+.st-key-answer_3 .stButton > button span,
+.st-key-empty_answer_0 .stButton > button p,
+.st-key-empty_answer_0 .stButton > button span,
+.st-key-empty_answer_1 .stButton > button p,
+.st-key-empty_answer_1 .stButton > button span,
+.st-key-empty_answer_2 .stButton > button p,
+.st-key-empty_answer_2 .stButton > button span,
+.st-key-empty_answer_3 .stButton > button p,
+.st-key-empty_answer_3 .stButton > button span {
     font-size: inherit;
     line-height: inherit;
     margin: 0;
 }
 
-.stButton>button[kind="primary"] {
-    background-color: #FFFFFF;
-    color: #000000;
-    border: 1px solid #D9D9D9;
-}
-
-.stButton>button[kind="primary"]:hover {
-    background-color: #F3F3F3;
-    color: #000000;
-}
-
-.st-key-answer_0 .stButton>button,
-.st-key-answer_1 .stButton>button,
-.st-key-answer_2 .stButton>button,
-.st-key-answer_3 .stButton>button,
-.st-key-empty_answer_0 .stButton>button,
-.st-key-empty_answer_1 .stButton>button,
-.st-key-empty_answer_2 .stButton>button,
-.st-key-empty_answer_3 .stButton>button {
-    background-color: var(--option-neutral-bg);
-}
-
-.st-key-answer_0 .stButton>button:hover,
-.st-key-answer_1 .stButton>button:hover,
-.st-key-answer_2 .stButton>button:hover,
-.st-key-answer_3 .stButton>button:hover {
-    background-color: #616161;
-}
-
-.st-key-quiz_back .stButton>button,
-.st-key-quiz_next .stButton>button,
-.st-key-quiz_hint .stButton>button,
-.st-key-quiz_generate .stButton>button {
-    height: 60px;
-    font-size: 20px;
-    margin-top: 20px;
-    padding: 10px;
-}
-
+/* ─── Option feedback divs (post-submit) ─── */
 .option-feedback {
     height: var(--option-height);
     width: 100%;
@@ -168,11 +244,11 @@ APP_STYLES = """
     text-align: center;
     overflow: hidden;
     font-size: var(--option-font-size);
-    font-weight: bold;
-    color: #FFFFFF;
-    line-height: 1.2;
+    font-weight: 500;
+    line-height: 1.4;
     word-break: break-word;
-    box-shadow: none;
+    border: 1px solid transparent;
+    font-family: Inter, system-ui, sans-serif;
 }
 
 .option-feedback__label {
@@ -182,58 +258,126 @@ APP_STYLES = """
 }
 
 .option-feedback--neutral {
-    background-color: #4A4A4A;
+    background-color: var(--canvas-soft-2);
+    color: var(--body-color);
+    border-color: var(--hairline);
 }
 
 .option-feedback--correct {
-    background-color: #1F8B24;
+    background-color: #dcfce7;
+    color: #14532d;
+    border-color: #bbf7d0;
 }
 
 .option-feedback--wrong {
-    background-color: #C62828;
+    background-color: #fee2e2;
+    color: #7f1d1d;
+    border-color: #fecaca;
 }
 
+/* ─── Quiz nav buttons (Back / Next / Hint / Generate) ─── */
+.st-key-quiz_back .stButton > button,
+.st-key-quiz_next .stButton > button,
+.st-key-quiz_hint .stButton > button,
+.st-key-quiz_generate .stButton > button {
+    height: 48px !important;
+    font-size: 14px !important;
+    font-weight: 500 !important;
+    margin-top: 16px;
+    border-radius: 100px !important;
+    padding: 0 16px !important;
+}
+
+/* ─── Score display ─── */
 .score-display {
-    font-size: 24px;
-    font-weight: bold;
+    font-family: Inter, system-ui, sans-serif;
+    font-size: 20px;
+    font-weight: 600;
+    letter-spacing: -0.6px;
+    line-height: 28px;
     text-align: center;
-    margin-bottom: 20px;
-    padding: 10px;
-    background-color: #E8F0FE;
-    border-radius: 10px;
-    color: #1A73E8;
+    margin-bottom: 24px;
+    padding: 16px 24px;
+    background-color: var(--canvas);
+    border: 1px solid var(--hairline);
+    border-radius: 12px;
+    color: var(--ink);
+    box-shadow: 0px 1px 1px #00000005, 0px 2px 2px #0000000a;
 }
 
+/* ─── Sidebar ─── */
+[data-testid="stSidebar"] {
+    background-color: var(--canvas) !important;
+    border-right: 1px solid var(--hairline) !important;
+}
+
+[data-testid="stSidebar"] .stButton > button {
+    border-radius: 6px !important;
+}
+
+/* ─── Form inputs ─── */
+[data-testid="stTextInput"] input,
+[data-testid="stNumberInput"] input {
+    border-radius: 6px !important;
+    border-color: var(--hairline) !important;
+    font-family: Inter, system-ui, sans-serif !important;
+    font-size: 14px !important;
+    color: var(--ink) !important;
+    background-color: var(--canvas) !important;
+}
+
+/* ─── Captions ─── */
+[data-testid="stCaptionContainer"] p,
+small {
+    color: var(--mute) !important;
+    font-size: 12px !important;
+    font-family: Inter, system-ui, sans-serif !important;
+}
+
+/* ─── Dividers ─── */
+hr {
+    border-color: var(--hairline) !important;
+    margin: 16px 0 !important;
+}
+
+/* ─── Generation overlay ─── */
 .generation-overlay {
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.88);
+    background: rgba(0, 0, 0, 0.80);
     z-index: 999999;
     display: flex;
     align-items: center;
     justify-content: center;
-    backdrop-filter: blur(6px);
+    backdrop-filter: blur(8px);
 }
 
 .generation-overlay__panel {
     text-align: center;
-    padding: 32px 40px;
+    padding: 40px 48px;
     border-radius: 16px;
-    background: rgba(22, 22, 22, 0.92);
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+    background: rgba(23, 23, 23, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    box-shadow:
+        0px 1px 1px #00000005,
+        0px 8px 16px -4px #0000000a,
+        0px 24px 32px -8px #0000000f;
 }
 
 .generation-overlay__title {
-    color: #FFFFFF;
-    font-size: 32px;
-    font-weight: 700;
+    color: #ffffff;
+    font-family: Inter, system-ui, sans-serif;
+    font-size: 24px;
+    font-weight: 600;
+    letter-spacing: -0.96px;
     margin-bottom: 8px;
 }
 
 .generation-overlay__subtitle {
-    color: #D0D0D0;
-    font-size: 18px;
+    color: #888888;
+    font-family: Inter, system-ui, sans-serif;
+    font-size: 14px;
+    font-weight: 400;
 }
 </style>
 """
